@@ -10,6 +10,8 @@ from Utils import *
 from collections import deque
 import ast
 from ActionHandler import ActionHandler
+import AutoCompletion
+
 ch = ActionHandler()
 
 # (1st label, 2nd label)
@@ -134,7 +136,7 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
     def get_autocomplete_labels_async(self):
         self.getControl(9091).reset()
         if self.search_str:
-            listitems = get_autocomplete_items(self.search_str)
+            listitems = AutoCompletion.get_autocomplete_items(self.search_str)
         else:
             listitems = list(self.last_searches)
         self.getControl(9091).addItems(create_listitems(listitems))
