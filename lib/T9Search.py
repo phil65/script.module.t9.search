@@ -32,9 +32,8 @@ KEYS = (("1", "ABC1"),
 class T9Search(object):
 
     def __init__(self, call=None, start_value="", history="Default"):
-        log(ADDON_PATH)
         dialog = T9SearchDialog(u'script-script.module.t9.search-Main.xml',
-                                "C:\\Kodi\\portable_data\\addons\\script.module.t9.search",
+                                os.path.join(os.path.dirname(__file__), ".."),
                                 call=call,
                                 start_value=start_value,
                                 history=history)
