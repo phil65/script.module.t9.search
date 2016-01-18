@@ -38,6 +38,7 @@ class T9Search(object):
                                 start_value=start_value,
                                 history=history)
         dialog.doModal()
+        self.search_str = dialog.search_str
 
 
 class T9SearchDialog(xbmcgui.WindowXMLDialog):
