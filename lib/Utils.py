@@ -63,7 +63,7 @@ def get_http(url=None, headers=False):
             response = urllib2.urlopen(request, timeout=3)
             data = response.read()
             return data
-        except:
+        except Exception:
             log("get_http: could not get data from %s" % url)
             xbmc.sleep(1000)
             succeed += 1
@@ -89,7 +89,7 @@ def get_JSON_response(url="", cache_days=7.0, folder=False, headers=False):
             log("prop load for %s. time: %f" % (url, time.time() - now))
             if prop:
                 return prop
-        except:
+        except Exception:
             log("could not load prop data for %s" % url)
     if xbmcvfs.exists(path) and ((now - os.path.getmtime(path)) < cache_seconds):
         results = read_from_file(path)
@@ -100,7 +100,7 @@ def get_JSON_response(url="", cache_days=7.0, folder=False, headers=False):
             results = simplejson.loads(response)
             log("download %s. time: %f" % (url, time.time() - now))
             save_to_file(results, hashed_url, cache_path)
-        except:
+        except Exception:
             log("Exception: Could not get new JSON data from %s. Tryin to fallback to cache" % url)
             log(response)
             if xbmcvfs.exists(path):
@@ -123,22 +123,13 @@ def log(txt):
              level=xbmc.LOGDEBUG)
 
 
-def get_browse_dialog(default="", heading=LANG(1024), dlg_type=3, shares="files", mask="", use_thumbs=False, treat_as_folder=False):
-    dialog = xbmcgui.Dialog()
-    value = dialog.browse(dlg_type, heading, shares, mask, use_thumbs, treat_as_folder, default)
-    return value
-
-
 def save_to_file(content, filename, path=""):
     """
     dump json and save to *filename in *path
     """
-    if path == "":
-        text_file_path = get_browse_dialog() + filename + ".txt"
-    else:
-        if not xbmcvfs.exists(path):
-            xbmcvfs.mkdirs(path)
-        text_file_path = os.path.join(path, filename + ".txt")
+    if not xbmcvfs.exists(path):
+        xbmcvfs.mkdirs(path)
+    text_file_path = os.path.join(path, filename + ".txt")
     now = time.time()
     text_file = xbmcvfs.File(text_file_path, "w")
     simplejson.dump(content, text_file)
@@ -151,8 +142,6 @@ def read_from_file(path="", raw=False):
     """
     return data from file with *path
     """
-    if path == "":
-        path = get_browse_dialog(dlg_type=1)
     if not xbmcvfs.exists(path):
         return False
     try:
@@ -163,7 +152,7 @@ def read_from_file(path="", raw=False):
             else:
                 result = f.read()
         return result
-    except:
+    except Exception:
         log("failed to load textfile: " + path)
         return False
 
@@ -182,24 +171,10 @@ def get_kodi_json(method, params):
     return simplejson.loads(json_query)
 
 
-def set_window_props(name, data, prefix="", debug=False):
-    if not data:
-        HOME.setProperty('%s%s.Count' % (prefix, name), '0')
-        log("%s%s.Count = None" % (prefix, name))
-        return None
-    for (count, result) in enumerate(data):
-        if debug:
-            log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
-        for (key, value) in result.iteritems():
-            value = unicode(value)
-            HOME.setProperty('%s%s.%i.%s' % (prefix, name, count + 1, str(key)), value)
-            if key.lower() in ["poster", "banner", "fanart", "clearart", "clearlogo", "landscape",
-                               "discart", "characterart", "tvshow.fanart", "tvshow.poster",
-                               "tvshow.banner", "tvshow.clearart", "tvshow.characterart"]:
-                HOME.setProperty('%s%s.%i.Art(%s)' % (prefix, name, count + 1, str(key)), value)
-            if debug:
-                log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + value)
-    HOME.setProperty('%s%s.Count' % (prefix, name), str(len(data)))
+def reset_color(item):
+    label = item.getLabel2()
+    label = label.replace("[COLOR=FFFF3333]", "").replace("[/COLOR]", "")
+    item.setLabel2(label)
 
 
 def create_listitems(data=None):
@@ -243,14 +218,14 @@ def create_listitems(data=None):
             elif key.lower() in INT_INFOLABELS:
                 try:
                     listitem.setInfo('video', {key.lower(): int(value)})
-                except:
+                except Exception:
                     pass
             elif key.lower() in STRING_INFOLABELS:
                 listitem.setInfo('video', {key.lower(): value})
             elif key.lower() in FLOAT_INFOLABELS:
                 try:
                     listitem.setInfo('video', {key.lower(): "%1.1f" % float(value)})
-                except:
+                except Exception:
                     pass
             # else:
             listitem.setProperty('%s' % (key), value)

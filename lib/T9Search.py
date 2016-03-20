@@ -195,10 +195,5 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
         letter = letters[index]
         label = "[COLOR=FFFF3333]%s[/COLOR]" % letter
         self.getControl(9090).getListItem(button).setLabel2(letters.replace(letter, label))
-        self.color_timer = Timer(1.0, self.reset_color, (self.getControl(9090).getListItem(button),))
+        self.color_timer = Timer(1.0, reset_color, (self.getControl(9090).getListItem(button),))
         self.color_timer.start()
-
-    def reset_color(self, item):
-        label = item.getLabel2()
-        label = label.replace("[COLOR=FFFF3333]", "").replace("[/COLOR]", "")
-        item.setLabel2(label)
