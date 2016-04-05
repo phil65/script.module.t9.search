@@ -6,7 +6,8 @@
 import time
 from threading import Timer
 import xbmcgui
-from Utils import *
+import os
+import T9Utils
 from collections import deque
 import ast
 from ActionHandler import ActionHandler
@@ -51,7 +52,7 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
         self.timer = None
         self.color_timer = None
         self.setting_name = kwargs.get("history")
-        setting_string = SETTING(self.setting_name)
+        setting_string = T9Utils.SETTING(self.setting_name)
         if self.setting_name and setting_string:
             self.last_searches = deque(ast.literal_eval(setting_string), maxlen=10)
         else:
@@ -69,7 +70,7 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
                   "index": str(i)
                   }
             listitems.append(li)
-        self.getControl(9090).addItems(create_listitems(listitems))
+        self.getControl(9090).addItems(T9Utils.create_listitems(listitems))
         self.setFocusId(9090)
         self.getControl(600).setLabel("[B]%s[/B]_" % self.search_str)
 
@@ -123,7 +124,7 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
                            number=self.control.getListItem(item_id).getProperty("key"),
                            button=int(self.control.getListItem(item_id).getProperty("index")))
 
-    @run_async
+    @T9Utils.run_async
     def update_search_label_async(self):
         while True:
             time.sleep(1)
@@ -132,14 +133,14 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
             else:
                 self.getControl(600).setLabel("[B]%s[/B][COLOR 00FFFFFF]_[/COLOR]" % self.search_str)
 
-    @run_async
+    @T9Utils.run_async
     def get_autocomplete_labels_async(self):
         self.getControl(9091).reset()
         if self.search_str:
             listitems = AutoCompletion.get_autocomplete_items(self.search_str)
         else:
             listitems = list(self.last_searches)
-        self.getControl(9091).addItems(create_listitems(listitems))
+        self.getControl(9091).addItems(T9Utils.create_listitems(listitems))
 
     def save_autocomplete(self):
         if not self.search_str:
@@ -148,7 +149,7 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
         if listitem in self.last_searches:
             self.last_searches.remove(listitem)
         self.last_searches.appendleft(listitem)
-        ADDON.setSetting(self.setting_name, str(list(self.last_searches)))
+        T9Utils.ADDON.setSetting(self.setting_name, str(list(self.last_searches)))
 
     def set_t9_letter(self, letters, number, button):
         now = time.time()
@@ -181,7 +182,7 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
 
     def use_classic_search(self):
         self.close()
-        result = xbmcgui.Dialog().input(heading=LANG(16017),
+        result = xbmcgui.Dialog().input(heading=T9Utils.LANG(16017),
                                         type=xbmcgui.INPUT_ALPHANUM)
         if result and result > -1:
             self.search_str = result.decode("utf-8")
@@ -195,5 +196,5 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
         letter = letters[index]
         label = "[COLOR=FFFF3333]%s[/COLOR]" % letter
         self.getControl(9090).getListItem(button).setLabel2(letters.replace(letter, label))
-        self.color_timer = Timer(1.0, reset_color, (self.getControl(9090).getListItem(button),))
+        self.color_timer = Timer(1.0, T9Utils.reset_color, (self.getControl(9090).getListItem(button),))
         self.color_timer.start()
