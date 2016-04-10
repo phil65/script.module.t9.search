@@ -81,14 +81,16 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
         ch.serve_action(action, self.getFocusId(), self)
 
     @ch.click(9090)
-    def panel_click(self):
-        self.set_t9_letter(letters=self.listitem.getProperty("value"),
-                           number=self.listitem.getProperty("key"),
-                           button=int(self.listitem.getProperty("index")))
+    def panel_click(self, control_id):
+        listitem = self.getControl(control_id).getSelectedItem()
+        self.set_t9_letter(letters=listitem.getProperty("value"),
+                           number=listitem.getProperty("key"),
+                           button=int(listitem.getProperty("index")))
 
     @ch.click(9091)
-    def set_autocomplete(self):
-        self.search_str = self.listitem.getLabel()
+    def set_autocomplete(self, control_id):
+        listitem = self.getControl(control_id).getSelectedItem()
+        self.search_str = listitem.getLabel()
         self.getControl(600).setLabel("[B]%s[/B]_" % self.search_str)
         self.get_autocomplete_labels_async()
         if self.timer:
@@ -99,15 +101,16 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
     @ch.action("parentdir", "*")
     @ch.action("parentfolder", "*")
     @ch.action("previousmenu", "*")
-    def close_dialog(self):
+    def close_dialog(self, control_id):
         self.save_autocomplete()
         self.close()
 
     @ch.action("number0", "*")
-    def set_0(self):
-        self.set_t9_letter(letters=self.control.getListItem(10).getProperty("value"),
-                           number=self.control.getListItem(10).getProperty("key"),
-                           button=int(self.control.getListItem(10).getProperty("index")))
+    def set_0(self, control_id):
+        listitem = self.getControl(control_id).getListItem(10)
+        self.set_t9_letter(letters=listitem.getProperty("value"),
+                           number=listitem.getProperty("key"),
+                           button=int(listitem.getProperty("index")))
 
     @ch.action("number1", "*")
     @ch.action("number2", "*")
@@ -118,11 +121,12 @@ class T9SearchDialog(xbmcgui.WindowXMLDialog):
     @ch.action("number7", "*")
     @ch.action("number8", "*")
     @ch.action("number9", "*")
-    def t_9_button_click(self):
+    def t_9_button_click(self, control_id):
         item_id = self.action_id - xbmcgui.REMOTE_1
-        self.set_t9_letter(letters=self.control.getListItem(item_id).getProperty("value"),
-                           number=self.control.getListItem(item_id).getProperty("key"),
-                           button=int(self.control.getListItem(item_id).getProperty("index")))
+        listitem = self.getControl(control_id).getListItem(item_id)
+        self.set_t9_letter(letters=listitem.getProperty("value"),
+                           number=listitem.getProperty("key"),
+                           button=int(listitem.getProperty("index")))
 
     @T9Utils.run_async
     def update_search_label_async(self):
