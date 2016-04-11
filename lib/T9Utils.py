@@ -157,20 +157,6 @@ def read_from_file(path="", raw=False):
         return False
 
 
-def notify(header="", message="", icon=ADDON_ICON, time=5000, sound=True):
-    xbmcgui.Dialog().notification(heading=header,
-                                  message=message,
-                                  icon=icon,
-                                  time=time,
-                                  sound=sound)
-
-
-def get_kodi_json(method, params):
-    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "%s", "params": %s, "id": 1}' % (method, params))
-    json_query = unicode(json_query, 'utf-8', errors='ignore')
-    return json.loads(json_query)
-
-
 def reset_color(item):
     label = item.getLabel2()
     label = label.replace("[COLOR=FFFF3333]", "").replace("[/COLOR]", "")
@@ -178,11 +164,6 @@ def reset_color(item):
 
 
 def create_listitems(data=None):
-    INT_INFOLABELS = ["year", "episode", "season", "top250", "tracknumber", "playcount", "overlay"]
-    FLOAT_INFOLABELS = ["rating"]
-    STRING_INFOLABELS = ["genre", "director", "mpaa", "plot", "plotoutline", "title", "originaltitle",
-                         "sorttitle", "duration", "studio", "tagline", "writer", "tvshowtitle", "premiered",
-                         "status", "code", "aired", "credits", "lastplayed", "album", "votes", "trailer", "dateadded"]
     if not data:
         return []
     itemlist = []
@@ -196,38 +177,8 @@ def create_listitems(data=None):
                 listitem.setLabel(value)
             elif key.lower() in ["label2"]:
                 listitem.setLabel2(value)
-            elif key.lower() in ["title"]:
-                listitem.setLabel(value)
-                listitem.setInfo('video', {key.lower(): value})
-            elif key.lower() in ["thumb"]:
-                listitem.setThumbnailImage(value)
-                listitem.setArt({key.lower(): value})
-            elif key.lower() in ["icon"]:
-                listitem.setIconImage(value)
-                listitem.setArt({key.lower(): value})
             elif key.lower() in ["path"]:
                 listitem.setPath(path=value)
-                # listitem.setProperty('%s' % (key), value)
-            # elif key.lower() in ["season", "episode"]:
-            #     listitem.setInfo('video', {key.lower(): int(value)})
-            #     listitem.setProperty('%s' % (key), value)
-            elif key.lower() in ["poster", "banner", "fanart", "clearart", "clearlogo", "landscape",
-                                 "discart", "characterart", "tvshow.fanart", "tvshow.poster",
-                                 "tvshow.banner", "tvshow.clearart", "tvshow.characterart"]:
-                listitem.setArt({key.lower(): value})
-            elif key.lower() in INT_INFOLABELS:
-                try:
-                    listitem.setInfo('video', {key.lower(): int(value)})
-                except Exception:
-                    pass
-            elif key.lower() in STRING_INFOLABELS:
-                listitem.setInfo('video', {key.lower(): value})
-            elif key.lower() in FLOAT_INFOLABELS:
-                try:
-                    listitem.setInfo('video', {key.lower(): "%1.1f" % float(value)})
-                except Exception:
-                    pass
-            # else:
             listitem.setProperty('%s' % (key), value)
         listitem.setProperty("index", str(count))
         itemlist.append(listitem)
