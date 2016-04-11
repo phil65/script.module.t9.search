@@ -11,7 +11,7 @@ import urllib2
 import os
 import time
 import hashlib
-import simplejson
+import json
 import threading
 from functools import wraps
 
@@ -85,7 +85,7 @@ def get_JSON_response(url="", cache_days=7.0, folder=False, headers=False):
     prop_time = HOME.getProperty(hashed_url + "_timestamp")
     if prop_time and now - float(prop_time) < cache_seconds:
         try:
-            prop = simplejson.loads(HOME.getProperty(hashed_url))
+            prop = json.loads(HOME.getProperty(hashed_url))
             log("prop load for %s. time: %f" % (url, time.time() - now))
             if prop:
                 return prop
@@ -97,7 +97,7 @@ def get_JSON_response(url="", cache_days=7.0, folder=False, headers=False):
     else:
         response = get_http(url, headers)
         try:
-            results = simplejson.loads(response)
+            results = json.loads(response)
             log("download %s. time: %f" % (url, time.time() - now))
             save_to_file(results, hashed_url, cache_path)
         except Exception:
@@ -109,7 +109,7 @@ def get_JSON_response(url="", cache_days=7.0, folder=False, headers=False):
                 results = []
     if results:
         HOME.setProperty(hashed_url + "_timestamp", str(now))
-        HOME.setProperty(hashed_url, simplejson.dumps(results))
+        HOME.setProperty(hashed_url, json.dumps(results))
         return results
     else:
         return []
@@ -132,7 +132,7 @@ def save_to_file(content, filename, path=""):
     text_file_path = os.path.join(path, filename + ".txt")
     now = time.time()
     text_file = xbmcvfs.File(text_file_path, "w")
-    simplejson.dump(content, text_file)
+    json.dump(content, text_file)
     text_file.close()
     log("saved textfile %s. Time: %f" % (text_file_path, time.time() - now))
     return True
@@ -148,7 +148,7 @@ def read_from_file(path="", raw=False):
         with open(path) as f:
             log("opened textfile %s." % (path))
             if not raw:
-                result = simplejson.load(f)
+                result = json.load(f)
             else:
                 result = f.read()
         return result
@@ -168,7 +168,7 @@ def notify(header="", message="", icon=ADDON_ICON, time=5000, sound=True):
 def get_kodi_json(method, params):
     json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "%s", "params": %s, "id": 1}' % (method, params))
     json_query = unicode(json_query, 'utf-8', errors='ignore')
-    return simplejson.loads(json_query)
+    return json.loads(json_query)
 
 
 def reset_color(item):
