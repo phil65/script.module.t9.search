@@ -11,11 +11,11 @@
 		<description lang="en">T9 search dialog including AutoCompletion (to be used by add-ons)</description>
 		<disclaimer lang="en"></disclaimer>
 		<language></language>
-	<platform>all</platform>
-	<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
-	<forum>-</forum>
-	<source>https://github.com/phil65/script.module.t9.search</source>
-	<news>Fixed: Import was done from wrong module</news>
-	<email>phil65@kodi.tv</email>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
+		<forum>-</forum>
+		<source>https://github.com/phil65/script.module.t9.search</source>
+		<news>Fixed: Import was done from wrong module</news>
+		<email>phil65@kodi.tv</email>
 	</extension>
 </addon>
